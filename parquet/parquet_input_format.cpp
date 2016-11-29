@@ -11,6 +11,16 @@
 #include <regex>
 #include <hdfs_lib/include/hdfs/hdfs.h>
 
+const int _parquet_magic_len = 4;
+const int _parquet_footer_size_len = 4;
+
+/**
+ * To recursive find all files in a directory
+ * @param fileList
+ * @param fs
+ * @param url
+ * @param fileFilter
+ */
 void recursiveHdfsDirectoryList(std::vector<hdfsFileInfo>* fileList, hdfsFS fs, const std::string& url, const std::regex& fileFilter) {
 
     int num_files = 0;
@@ -26,20 +36,33 @@ void recursiveHdfsDirectoryList(std::vector<hdfsFileInfo>* fileList, hdfsFS fs, 
     }
 }
 
-parquet::FileMetaData* getParquetFooter(std::string& url, hdfsFS fs){
-    auto* file_into = hdfsGetPathInfo(fs, url.c_str());
-    auto filesize = file_into->mSize;
-    const int _parquet_magic_len = 4;
-    const int _parquet_footer_size_len = 4;
-
+/**
+ * To get the size of the footer of a Parquet file
+ * @param file
+ * @param info
+ * @param fs
+ * @return
+ */
+int32_t getParquetFooterSize(hdfsFile file, hdfsFileInfo* info, hdfsFS fs){
+    auto filesize = info->mSize;
     int64_t footer_size_start = filesize - _parquet_footer_size_len - _parquet_magic_len;
 
     //Footer Size from the hdfs block
-    auto hdfsFile = hdfsOpenFile(fs, url.c_str(), O_RDONLY, 0, 0,0);
-    //hdfsRead()
+    int32_t* footer_size;
+
+    hdfsPread(fs, file, footer_size_start, footer_size, _parquet_footer_size_len);
+}
 
 
-    // parquet::FileMetaData::Make(&metadata_buffer[0], &metadata_len)
+parquet::FileMetaData* getParquetFooter(std::string& url, hdfsFS fs) {
+    auto *file_info = hdfsGetPathInfo(fs, url.c_str());
+    auto file_size = file_info->mSize;
+
+    auto hdfs_file = hdfsOpenFile(fs, url.c_str(), O_RDONLY, 0, 0, 0);
+    auto footer_size = getParquetFooterSize(hdfs_file, file_info, fs);
+
+    //parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
+
 }
 
 bool husky::io::ParquetLoader::load(const std::string& url) {
