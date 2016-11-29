@@ -11,6 +11,8 @@
 
 #include "io/input/file_inputformat_impl.hpp"
 
+#include "parquet/file/metadata.h"
+#include "parquet/schema/descriptor.h"
 /**
  * Loader
  * ------------
@@ -23,32 +25,35 @@
  * Executor read the
  */
 namespace husky {
+    namespace load{
+
+    }
     namespace io {
 
-        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url)
+        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
 
         class ParquetLoader {
         public:
             ParquetLoader();
             ~ParquetLoader();
-            bool load(const std::string &url);
+            bool load(const std::string& url);
 
         protected:
-            void read_schema();
-            void read_row_group_metadata();
-            void set_assigner();
+            hdfsFS& hdfs;
         };
 
-        class ParquetInputFormat{
+        // Create attr list with row group
+        class ParquetVectorizedInputFormat : public InputFormatBase {
         public:
-            ParquetReader();
-            ~ParquetReader();
-            next();
+            ParquetVectorizedInputFormat();
+            ~ParquetVectorizedInputFormat();
+            typedef std::vector RecordT;
+            bool next(RecordT&);
 
         protected:
-            SchemaDescriptor &schema;
+            parquet::SchemaDescriptor &schema;
             void read_schema();
-            void handle_next_row_group(long start, long len);
+            void handle_next_row_group(long, long);
             bool fetch_new_row_group();
         };
     }  // namespace io

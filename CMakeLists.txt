@@ -56,5 +56,5 @@ add_subdirectory(benchmarks)
 add_subdirectory(parquet)
 
 # libhusky.a
-set(husky-objs $<TARGET_OBJECTS:channel-objs> $<TARGET_OBJECTS:base-objs> $<TARGET_OBJECTS:core-objs> ${io-objs} ${lib-objs} parquet/parquet_file_splitter.cpp parquet/parquet_file_splitter.hpp parquet/parquet_file_assigner.cpp parquet/parquet_file_assigner.hpp parquet/parquet_reader.cpp parquet/parquet_reader.hpp)
+set(husky-objs $<TARGET_OBJECTS:channel-objs> $<TARGET_OBJECTS:base-objs> $<TARGET_OBJECTS:core-objs> ${io-objs} ${lib-objs})
 add_library(husky STATIC ${husky-objs})
