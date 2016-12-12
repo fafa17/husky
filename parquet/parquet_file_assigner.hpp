@@ -8,39 +8,18 @@
 #include <map>
 
 #include "master/master.hpp"
-
-
-enum SplitStatus { pending, reading, fail};
-
-//Metadata for row group
-struct RowGroupInfo{
-
-    //Row group may consist of multi hdfs block
-    std::vector<BlkDesc> hdfs_block_list;
-
-};
-
-
-struct ParquetSplitInfo{
-
-    std::vector<RowGroupInfo> row_group_list;
-    SplitStatus status;
-
-};
-
+#include "parquet/util"
 
 class ParquetSplitAssinger {
 
 public:
     ParquetSplitAssinger();
 
-    ParquetSplitAssinger(const std::map<int, std::vector<ParquetSplitInfo>> &request_info_mapping);
-
     ~ParquetSplitAssinger() = default;
 
     void master_main_handler();
     void master_setup_handler();
-    void browse_local(const std::string& url);
+    void set_path(const std::string& url);
     std::pair<std::string, size_t> answer(std::string& host, std::string& url);
 
 

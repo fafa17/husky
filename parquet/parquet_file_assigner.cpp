@@ -7,3 +7,7 @@
 
 ParquetSplitAssinger::ParquetSplitAssinger(const std::map<int, std::vector<ParquetSplitInfo>> &request_info_mapping)
         : request_info_mapping(request_info_mapping) {}
+
+void ParquetSplitAssinger::set_path(const std::string &url) {
+
+}

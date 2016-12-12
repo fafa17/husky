@@ -12,4 +12,9 @@ if(MONGOCLIENT_FOUND)
     add_definitions(-DWITH_MONGODB)
 endif(MONGOCLIENT_FOUND)
 
+add_library(parquet-objs OBJECT
+        parquet_file_assigner.cpp
+        parquet_input_format.cpp)
+
 set(husky husky-lib husky-io husky-core husky-base)
+
