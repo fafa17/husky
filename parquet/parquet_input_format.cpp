@@ -61,8 +61,7 @@ parquet::FileMetaData* getParquetFooter(std::string& url, hdfsFS fs) {
     auto hdfs_file = hdfsOpenFile(fs, url.c_str(), O_RDONLY, 0, 0, 0);
     auto footer_size = getParquetFooterSize(hdfs_file, file_info, fs);
 
-    //parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
-
+    parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
 }
 
 bool husky::io::ParquetLoader::load(const std::string& url) {
