@@ -25,9 +25,7 @@
  * Executor read the
  */
 namespace husky {
-    namespace load{
 
-    }
     namespace io {
 
         parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
@@ -42,11 +40,21 @@ namespace husky {
             hdfsFS& hdfs;
         };
 
-        // Create attr list with row group
-        class ParquetVectorizedInputFormat : public InputFormatBase {
+        class Row{
         public:
-            ParquetVectorizedInputFormat();
-            ~ParquetVectorizedInputFormat();
+            Field* fields
+        };
+
+        class Field{
+        public :
+
+        };
+
+        // Create attr list with row group
+        class ParquetInputFormat : public InputFormatBase {
+        public:
+            ParquetInputFormat();
+            ~ParquetInputFormat();
             typedef std::vector RecordT;
             bool next(RecordT&);
 
@@ -56,6 +64,35 @@ namespace husky {
             void handle_next_row_group(long, long);
             bool fetch_new_row_group();
         };
+
+//        // Create attr list with row group
+//        class ParquetVectorizedInputFormat : public InputFormatBase {
+//        public:
+//            ParquetVectorizedInputFormat();
+//            ~ParquetVectorizedInputFormat();
+//            typedef std::vector RecordT;
+//            bool next(RecordT&);
+//
+//        protected:
+//            parquet::SchemaDescriptor &schema;
+//            void read_schema();
+//            void handle_next_row_group(long, long);
+//            bool fetch_new_row_group();
+//        };
+
+        class ParquetRowGroupReader {
+        public :
+            ParquetRowGroupReader();
+            ~ParquetRowGroupReader();
+            void setStartEnd(long, long);
+            bool nextColumn(shared_ptr<>)
+
+        protected:
+            std::unique_ptr<PageReader> currentPageReader;
+
+        };
+
+
     }  // namespace io
 }  // namespace husky
 
