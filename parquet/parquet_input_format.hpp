@@ -10,10 +10,9 @@
 
 
 #include "io/input/file_inputformat_impl.hpp"
-#include "parquet/file/metadata.h"
-#include "parquet/file/reader.h"
-#include "parquet/schema/descriptor.h"
 
+#include "parquet/file/metadata.h"
+#include "parquet/schema/descriptor.h"
 /**
  * Loader
  * ------------
@@ -26,36 +25,74 @@
  * Executor read the
  */
 namespace husky {
+
     namespace io {
 
-        parquet::FileMetaData read_footer(const std::string &file_url);
+        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
 
         class ParquetLoader {
         public:
             ParquetLoader();
             ~ParquetLoader();
-            bool load(const std::string &url);
+            bool load(const std::string& url);
 
         protected:
-            void read_schema();
-            void read_row_group_metadata();
-            void set_assigner();
+            hdfsFS& hdfs;
         };
 
-        class ParquetInputFormat{
+        class Row{
+        public:
+            Field* fields
+        };
+
+        class Field{
+        public :
+
+        };
+
+        // Create attr list with row group
+        class ParquetInputFormat : public InputFormatBase {
         public:
             ParquetInputFormat();
             ~ParquetInputFormat();
-            void next();
+            typedef std::vector RecordT;
+            bool next(RecordT&);
 
         protected:
-            parquet::RowGroupReader create_parquet_data_reader();
             parquet::SchemaDescriptor &schema;
-            std::string parquet_request_id;
             void read_schema();
-            void handle_next_row_group(long start, long len);
+            void handle_next_row_group(long, long);
             bool fetch_new_row_group();
         };
+
+//        // Create attr list with row group
+//        class ParquetVectorizedInputFormat : public InputFormatBase {
+//        public:
+//            ParquetVectorizedInputFormat();
+//            ~ParquetVectorizedInputFormat();
+//            typedef std::vector RecordT;
+//            bool next(RecordT&);
+//
+//        protected:
+//            parquet::SchemaDescriptor &schema;
+//            void read_schema();
+//            void handle_next_row_group(long, long);
+//            bool fetch_new_row_group();
+//        };
+
+        class ParquetRowGroupReader {
+        public :
+            ParquetRowGroupReader();
+            ~ParquetRowGroupReader();
+            void setStartEnd(long, long);
+            bool nextColumn(shared_ptr<>)
+
+        protected:
+            std::unique_ptr<PageReader> currentPageReader;
+
+        };
+
+
     }  // namespace io
 }  // namespace husky
 
