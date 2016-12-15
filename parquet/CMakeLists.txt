@@ -18,3 +18,7 @@ add_library(parquet-objs OBJECT
 
 set(husky husky-lib husky-io husky-core husky-base)
 
+# Test
+add_executable(TestParquet parquet_input_format.cpp)
+target_link_libraries(TestParquet ${husky})
+set_property(TARGET TestParquet PROPERTY CXX_STANDARD 14)

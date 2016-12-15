@@ -40,51 +40,30 @@ namespace husky {
             hdfsFS& hdfs;
         };
 
-        class Row{
-        public:
-            std::shared_ptr<Field> fields;
-        };
+//        class Row{
+//        public:
+//            std::shared_ptr<Field> fields;
+//        };
 
         class Field{
         public :
-            std::shared_ptr<bool> getBoolean(){
-                return (std::shared_ptr<bool>) value;
-            }
-            std::shared_ptr<uint8_t> getUint8(){
-                return (std::shared_ptr<uint8_t>) value;
-            }
-            std::shared_ptr<int8_t> getInt8(){
-                return (std::shared_ptr<int8_t>)value;
-            }
-            std::shared_ptr<uint16_t> getUint16(){
-                return (std::shared_ptr<uint16_t>)value;
-            }
-            std::shared_ptr<int16_t> getInt16(){
-                return (std::shared_ptr<int16_t>)value;
-            }
-            std::shared_ptr<uint32_t> getUint32(){
-                return (std::shared_ptr<uint32_t>)value;
-            }
-            std::shared_ptr<int32_t> getInt32(){
-                return (std::shared_ptr<int32_t>)value;
-            }
-            std::shared_ptr<uint64_t> getUint64(){
-                return (std::shared_ptr<u_int64_t>)value;
-            }
-            std::shared_ptr<int64_t> getInt64(){
-                return (std::shared_ptr<int64_t>)value;
-            }
-            std::shared_ptr<float_t> getFloat(){
-                return (std::shared_ptr<float_t>)value;
-            }
-            std::shared_ptr<double_t> getDouble(){
-                return (std::shared_ptr<double_t>)value;
-            }
-            std::shared_ptr<std::string> getString() {
-                return (std::shared_ptr<std::string>) value;
-            }
+            Field(std::shared_ptr<void> obj);
+
+            std::shared_ptr<bool> getBoolean();
+            std::shared_ptr<uint8_t> getUint8();
+            std::shared_ptr<int8_t> getInt8();
+            std::shared_ptr<uint16_t> getUint16();
+            std::shared_ptr<int16_t> getInt16();
+            std::shared_ptr<uint32_t> getUint32();
+            std::shared_ptr<int32_t> getInt32();
+            std::shared_ptr<uint64_t> getUint64();
+            std::shared_ptr<int64_t> getInt64();
+            std::shared_ptr<float_t> getFloat();
+            std::shared_ptr<double_t> getDouble();
+            std::shared_ptr<std::string> getString();
+
         private :
-            std::shared_ptr value;
+            std::shared_ptr<void> value;
         };
 
         // Create attr list with row group
@@ -92,8 +71,8 @@ namespace husky {
         public:
             ParquetInputFormat();
             ~ParquetInputFormat();
-            typedef std::vector RecordT;
-            bool next(RecordT&);
+//            typedef std::vector RecordT;
+//            bool next(RecordT&);
 
         protected:
             parquet::SchemaDescriptor &schema;
@@ -122,10 +101,10 @@ namespace husky {
             ParquetRowGroupReader();
             ~ParquetRowGroupReader();
             void setStartEnd(long, long);
-            bool nextColumn(shared_ptr<>)
+            bool nextColumn(std::shared_ptr<void>);
 
         protected:
-            std::unique_ptr<PageReader> currentPageReader;
+//            std::unique_ptr<PageReader> currentPageReader;
 
         };
 

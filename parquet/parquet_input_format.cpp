@@ -6,9 +6,9 @@
 
 #include "hdfs/hdfs.h"
 #include "parquet/file/metadata.h"
-#include "parquet/file/reader-internal.h"
 
 #include <regex>
+#include <iostream>
 #include <hdfs_lib/include/hdfs/hdfs.h>
 
 const int _parquet_magic_len = 4;
@@ -61,7 +61,7 @@ parquet::FileMetaData* getParquetFooter(std::string& url, hdfsFS fs) {
     auto hdfs_file = hdfsOpenFile(fs, url.c_str(), O_RDONLY, 0, 0, 0);
     auto footer_size = getParquetFooterSize(hdfs_file, file_info, fs);
 
-    parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
+//    parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
 }
 
 bool husky::io::ParquetLoader::load(const std::string& url) {
@@ -80,3 +80,51 @@ bool husky::io::ParquetLoader::load(const std::string& url) {
     //set to assigner
     return false;
 }
+
+husky::io::Field::Field(std::shared_ptr<void> obj) {
+    this->value = obj;
+}
+std::shared_ptr<bool> husky::io::Field::getBoolean(){
+    return std::static_pointer_cast<bool>(value);
+}
+std::shared_ptr<uint8_t> husky::io::Field::getUint8(){
+    return std::static_pointer_cast<uint8_t>(value);
+}
+std::shared_ptr<int8_t> husky::io::Field::getInt8(){
+    return std::static_pointer_cast<int8_t>(value);
+}
+std::shared_ptr<uint16_t> husky::io::Field::getUint16(){
+    return std::static_pointer_cast<uint16_t>(value);
+}
+std::shared_ptr<int16_t> husky::io::Field::getInt16(){
+    return std::static_pointer_cast<int16_t>(value);
+}
+std::shared_ptr<uint32_t> husky::io::Field::getUint32(){
+    return std::static_pointer_cast<uint32_t>(value);
+}
+std::shared_ptr<int32_t> husky::io::Field::getInt32(){
+    return std::static_pointer_cast<int32_t>(value);
+}
+std::shared_ptr<uint64_t> husky::io::Field::getUint64(){
+    return std::static_pointer_cast<u_int64_t>(value);
+}
+std::shared_ptr<int64_t> husky::io::Field::getInt64(){
+    return std::static_pointer_cast<int64_t>(value);
+}
+std::shared_ptr<float_t> husky::io::Field::getFloat(){
+    return std::static_pointer_cast<float_t>(value);
+}
+std::shared_ptr<double_t> husky::io::Field::getDouble(){
+    return std::static_pointer_cast<double_t>(value);
+}
+std::shared_ptr<std::string> husky::io::Field::getString() {
+    return std::static_pointer_cast<std::string>(value);
+}
+
+int main()
+{
+    auto field = husky::io::Field(std::shared_ptr<int32_t>(new int32_t(10)));
+
+    std::cout << field.getInt32();
+}
+
