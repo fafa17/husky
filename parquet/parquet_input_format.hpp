@@ -9,10 +9,13 @@
 #define PROJECT_PARQUET_READER_HPP
 
 
+#include <parquet/model/Field.hpp>
 #include "io/input/file_inputformat_impl.hpp"
 
 #include "parquet/file/metadata.h"
 #include "parquet/schema/descriptor.h"
+#include "parquet/file/reader.h"
+#include "parquet/model/Field.hpp"
 /**
  * Loader
  * ------------
@@ -28,86 +31,52 @@ namespace husky {
 
     namespace io {
 
-        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
-
-        class ParquetLoader {
-        public:
-            ParquetLoader();
-            ~ParquetLoader();
-            bool load(const std::string& url);
-
-        protected:
-            hdfsFS& hdfs;
-        };
-
-//        class Row{
+//        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
+//
+//        class ParquetLoader {
 //        public:
-//            std::shared_ptr<Field> fields;
+//            ParquetLoader();
+//            ~ParquetLoader();
+//            bool load(const std::string& url);
+//
+//        protected:
+//            hdfsFS& hdfs;
 //        };
 
-        class Field{
-        public :
-            Field(std::shared_ptr<void> obj);
-
-            std::shared_ptr<bool> getBoolean();
-            std::shared_ptr<uint8_t> getUint8();
-            std::shared_ptr<int8_t> getInt8();
-            std::shared_ptr<uint16_t> getUint16();
-            std::shared_ptr<int16_t> getInt16();
-            std::shared_ptr<uint32_t> getUint32();
-            std::shared_ptr<int32_t> getInt32();
-            std::shared_ptr<uint64_t> getUint64();
-            std::shared_ptr<int64_t> getInt64();
-            std::shared_ptr<float_t> getFloat();
-            std::shared_ptr<double_t> getDouble();
-            std::shared_ptr<std::string> getString();
-
-        private :
-            std::shared_ptr<void> value;
+        class Row{
+        public:
+            std::shared_ptr<Field> fields;
         };
+
 
         // Create attr list with row group
         class ParquetInputFormat : public InputFormatBase {
         public:
             ParquetInputFormat();
             ~ParquetInputFormat();
-//            typedef std::vector RecordT;
-//            bool next(RecordT&);
+
+            typedef std::shared_ptr<Row> RecordT;
+            bool next(RecordT&);
+
+            void set(std::string, int64_t , int64_t);
+
+            int32_t getNumOfColumn(){schema->num_columns();}
+            int64_t getNumOfRow(){current_row_group_reader->metadata()->num_rows();}
 
         protected:
-            parquet::SchemaDescriptor &schema;
-            void read_schema();
-            void handle_next_row_group(long, long);
-            bool fetch_new_row_group();
-        };
+            const parquet::SchemaDescriptor* schema;
 
-//        // Create attr list with row group
-//        class ParquetVectorizedInputFormat : public InputFormatBase {
-//        public:
-//            ParquetVectorizedInputFormat();
-//            ~ParquetVectorizedInputFormat();
-//            typedef std::vector RecordT;
-//            bool next(RecordT&);
-//
-//        protected:
-//            parquet::SchemaDescriptor &schema;
-//            void read_schema();
-//            void handle_next_row_group(long, long);
-//            bool fetch_new_row_group();
-//        };
+            std::string current_file;
+            int64_t current_start_pos;
+            int64_t current_len;
 
-        class ParquetRowGroupReader {
-        public :
-            ParquetRowGroupReader();
-            ~ParquetRowGroupReader();
-            void setStartEnd(long, long);
-            bool nextColumn(std::shared_ptr<void>);
+            void convertToRow();
+            std::shared_ptr<Row> row_buffer;
 
-        protected:
-//            std::unique_ptr<PageReader> currentPageReader;
+            std::unique_ptr<parquet::ParquetFileReader> current_file_reader;
+            std::shared_ptr<parquet::RowGroupReader> current_row_group_reader;
 
         };
-
 
     }  // namespace io
 }  // namespace husky

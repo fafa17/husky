@@ -9,7 +9,8 @@
 
 #include <regex>
 #include <iostream>
-#include <hdfs_lib/include/hdfs/hdfs.h>
+#include <parquet/io/HDFSFileSource.hpp>
+#include <io/hdfs_manager.hpp>
 
 const int _parquet_magic_len = 4;
 const int _parquet_footer_size_len = 4;
@@ -63,68 +64,64 @@ parquet::FileMetaData* getParquetFooter(std::string& url, hdfsFS fs) {
 
 //    parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
 }
+//
+//bool husky::io::ParquetLoader::load(const std::string& url) {
+//    //hadoop read
+//    //list all files
+//    std::regex parquetSuffixFilter("*.parquet");
+//    auto * file_list = new std::vector<hdfsFileInfo>();
+//    recursiveHdfsDirectoryList(file_list, this->hdfs, url, parquetSuffixFilter);
+//
+//    //get footers of all files
+//    //TODO: checking schema consistency over files
+//    for ( int x = 0; x < file_list->size(); x++ ){
+//
+//    }
+//    //Create new split object for each row group
+//    //set to assigner
+//    return false;
+//}
 
-bool husky::io::ParquetLoader::load(const std::string& url) {
-    //hadoop read
-    //list all files
-    std::regex parquetSuffixFilter("*.parquet");
-    auto * file_list = new std::vector<hdfsFileInfo>();
-    recursiveHdfsDirectoryList(file_list, this->hdfs, url, parquetSuffixFilter);
+void husky::io::ParquetInputFormat::set(std::string filePath, int64_t startPos, int64_t len) {
+    current_file = filePath;
+    current_start_pos = startPos;
+    current_len = len;
 
-    //get footers of all files
-    //TODO: checking schema consistency over files
-    for ( int x = 0; x < file_list->size(); x++ ){
+    //Realod parquet reader and rowGroupReader
+    //Set schema
+    auto source = new HDFSFileSource();
+    source->Open(HDFS::getManager()->get_fs(), filePath);
+    current_file_reader = std::unique_ptr(parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source)));
 
-    }
-    //Create new split object for each row group
-    //set to assigner
-    return false;
-}
+    current_row_group_reader = current_file_reader->RowGroup(1);
 
-husky::io::Field::Field(std::shared_ptr<void> obj) {
-    this->value = obj;
-}
-std::shared_ptr<bool> husky::io::Field::getBoolean(){
-    return std::static_pointer_cast<bool>(value);
-}
-std::shared_ptr<uint8_t> husky::io::Field::getUint8(){
-    return std::static_pointer_cast<uint8_t>(value);
-}
-std::shared_ptr<int8_t> husky::io::Field::getInt8(){
-    return std::static_pointer_cast<int8_t>(value);
-}
-std::shared_ptr<uint16_t> husky::io::Field::getUint16(){
-    return std::static_pointer_cast<uint16_t>(value);
-}
-std::shared_ptr<int16_t> husky::io::Field::getInt16(){
-    return std::static_pointer_cast<int16_t>(value);
-}
-std::shared_ptr<uint32_t> husky::io::Field::getUint32(){
-    return std::static_pointer_cast<uint32_t>(value);
-}
-std::shared_ptr<int32_t> husky::io::Field::getInt32(){
-    return std::static_pointer_cast<int32_t>(value);
-}
-std::shared_ptr<uint64_t> husky::io::Field::getUint64(){
-    return std::static_pointer_cast<u_int64_t>(value);
-}
-std::shared_ptr<int64_t> husky::io::Field::getInt64(){
-    return std::static_pointer_cast<int64_t>(value);
-}
-std::shared_ptr<float_t> husky::io::Field::getFloat(){
-    return std::static_pointer_cast<float_t>(value);
-}
-std::shared_ptr<double_t> husky::io::Field::getDouble(){
-    return std::static_pointer_cast<double_t>(value);
-}
-std::shared_ptr<std::string> husky::io::Field::getString() {
-    return std::static_pointer_cast<std::string>(value);
+    schema = current_file_reader->metadata()->schema();
+
 }
 
-int main()
-{
-    auto field = husky::io::Field(std::shared_ptr<int32_t>(new int32_t(10)));
-
-    std::cout << field.getInt32();
+bool husky::io::ParquetInputFormat::next(husky::io::ParquetInputFormat::RecordT &) {
+    // Scan all row in the row group
+//
+//
+//    //load a row group into the ram
+//
+//
+//    for (int64_t x = 0 ; x < total_row ; x++ ){
+//        for (int32_t y = 0; y < total_row ; y++){
+//
+//        }
+//    }
 }
 
+void husky::io::ParquetInputFormat::convertToRow() {
+    auto total_row = getNumOfRow();
+    auto total_column = getNumOfColumn();
+
+//    std::unique_ptr<PageReader*> columnReader(new (PageReader*)[total_column]);
+//
+//
+//    current_row_group_reader->Column()
+//
+//    row_buffer = std::shared_ptr<Row>(new Row[total_row],  std::default_delete<Row[]>());
+//    for ( )
+}

@@ -1,16 +1,11 @@
 include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 
-add_library(Parquet parquet_input_format.cpp parquet_file_assigner.cpp)
+add_library(Parquet parquet_input_format.cpp parquet_file_assigner.cpp model/Field.cpp model/Field.hpp io/HDFSFileSource.cpp io/HDFSFileSource.hpp)
 
 if(LIBHDFS3_FOUND)
     include_directories(${LIBHDFS3_INCLUDE_DIR})
     add_definitions(-DWITH_HDFS)
 endif(LIBHDFS3_FOUND)
-
-if(MONGOCLIENT_FOUND)
-    include_directories(${MONGOCLIENT_INCLUDE_DIR})
-    add_definitions(-DWITH_MONGODB)
-endif(MONGOCLIENT_FOUND)
 
 add_library(parquet-objs OBJECT
         parquet_file_assigner.cpp

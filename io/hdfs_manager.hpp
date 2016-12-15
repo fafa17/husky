@@ -50,6 +50,17 @@ class HDFSManager {
 
 namespace HDFS {
 
+// singleton HDFS Manager
+static std::shared_ptr<HDFSManager> manager = NULL;
+
+static void initHDFSManager(std::string& host, std::string& port) {
+    manager = std::shared_ptr<HDFSManager>(new HDFSManager(host, port));
+}
+
+static std::shared_ptr<HDFSManager> getManager(){
+    return HDFS::manager;
+}
+
 typedef boost::ptr_map<std::string, HDFSManager> ManagerMap;
 extern thread_local ManagerMap sManagers;
 
