@@ -117,11 +117,5 @@ void husky::io::ParquetInputFormat::convertToRow() {
     auto total_row = getNumOfRow();
     auto total_column = getNumOfColumn();
 
-//    std::unique_ptr<PageReader*> columnReader(new (PageReader*)[total_column]);
-//
-//
-//    current_row_group_reader->Column()
-//
-//    row_buffer = std::shared_ptr<Row>(new Row[total_row],  std::default_delete<Row[]>());
-//    for ( )
+    row_buffer = std::shared_ptr<Row>(new Row[total_row],  std::default_delete<Row[]>());
 }
