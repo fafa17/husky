@@ -1,6 +1,6 @@
 include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 
-add_library(Parquet parquet_input_format.cpp parquet_file_assigner.cpp model/Field.cpp model/Field.hpp io/HDFSFileSource.cpp io/HDFSFileSource.hpp)
+add_library(Parquet parquet_input_format.cpp parquet_file_assigner.cpp model/Field.cpp model/Field.hpp io/HDFSFileSource.cpp io/HDFSFileSource.hpp test.cpp test.hpp)
 
 if(LIBHDFS3_FOUND)
     include_directories(${LIBHDFS3_INCLUDE_DIR})
@@ -14,6 +14,6 @@ add_library(parquet-objs OBJECT
 set(husky husky-lib husky-io husky-core husky-base)
 
 # Test
-add_executable(TestParquet parquet_input_format.cpp)
-target_link_libraries(TestParquet ${husky})
-set_property(TARGET TestParquet PROPERTY CXX_STANDARD 14)
+add_executable(Test test.cpp)
+target_link_libraries(Test ${husky})
+set_property(TARGET Test PROPERTY CXX_STANDARD 14)

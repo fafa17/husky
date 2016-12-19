@@ -45,8 +45,12 @@ namespace husky {
 
         class Row{
         public:
-            Row(std::shared_ptr<Field> fields) {this->fields = fields}
-            std::shared_ptr<Field> fields;
+            Row();
+            void set(std::shared_ptr<Field[]> fields){
+                this->fields = fields;
+            }
+        private:
+            std::shared_ptr<Field[]> fields;
         };
 
 
@@ -72,7 +76,7 @@ namespace husky {
             int64_t current_len;
 
             void convertToRow();
-            std::shared_ptr<Row> row_buffer;
+            std::shared_ptr<Row[]> row_buffer;
 
             std::unique_ptr<parquet::ParquetFileReader> current_file_reader;
             std::shared_ptr<parquet::RowGroupReader> current_row_group_reader;

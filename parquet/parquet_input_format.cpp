@@ -98,6 +98,8 @@ void husky::io::ParquetInputFormat::set(std::string filePath, int64_t startPos, 
 
     schema = current_file_reader->metadata()->schema();
 
+    convertToRow();
+
 }
 
 bool husky::io::ParquetInputFormat::next(husky::io::ParquetInputFormat::RecordT &) {
@@ -119,9 +121,8 @@ void husky::io::ParquetInputFormat::convertToRow() {
     auto total_column = getNumOfColumn();
 
     //clean up
-    row_buffer.reset();
+    row_buffer.reset(new Row[total_row]);
 
-    row_buffer = std::shared_ptr<Row>(new Row[total_row],  std::default_delete<Row[]>());
     int64_t values_read = 0;
     uint8_t** values = new uint8_t*[total_column];
 
@@ -131,9 +132,12 @@ void husky::io::ParquetInputFormat::convertToRow() {
     }
 
     for ( int x = 0; x < total_row; x++){
-        std::shared_ptr<Field> row(new Row());
-        for ( int y = 0; y< total_column; y++){
+        std::shared_ptr<Field[]> fields(new Field[total_column]);
 
+        for ( int y = 0; y< total_column; y++){
+            (*fields)[y].set((void *)values[y][x]);
         }
+
+        (*row_buffer)[x].set(fields);
     }
 }
