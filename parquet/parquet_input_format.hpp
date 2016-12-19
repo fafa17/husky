@@ -45,6 +45,7 @@ namespace husky {
 
         class Row{
         public:
+            Row(std::shared_ptr<Field> fields) {this->fields = fields}
             std::shared_ptr<Field> fields;
         };
 

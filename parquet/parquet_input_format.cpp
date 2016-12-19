@@ -6,6 +6,7 @@
 
 #include "hdfs/hdfs.h"
 #include "parquet/file/metadata.h"
+#include "parquet/column/scan-all.h"
 
 #include <regex>
 #include <iostream>
@@ -117,5 +118,22 @@ void husky::io::ParquetInputFormat::convertToRow() {
     auto total_row = getNumOfRow();
     auto total_column = getNumOfColumn();
 
+    //clean up
+    row_buffer.reset();
+
     row_buffer = std::shared_ptr<Row>(new Row[total_row],  std::default_delete<Row[]>());
+    int64_t values_read = 0;
+    uint8_t** values = new uint8_t*[total_column];
+
+    // loop all value and read to buffer
+    for ( int x = 0; x < total_column; x++){
+        parquet::ScanAllValues(total_row, nullptr, nullptr, values[x], &values_read, current_row_group_reader->Column(x).get());
+    }
+
+    for ( int x = 0; x < total_row; x++){
+        std::shared_ptr<Field> row(new Row());
+        for ( int y = 0; y< total_column; y++){
+
+        }
+    }
 }
