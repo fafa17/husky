@@ -3,7 +3,6 @@
 //
 
 #include <sstream>
-#include <parquet/exception.h>
 #include "HDFSFileSource.hpp"
 
 void HDFSFileSource::Open(hdfsFS& fs, const std::string& path) {
@@ -22,7 +21,7 @@ void HDFSFileSource::Seek(int64_t pos) {
     if (0 != hdfsSeek(fs_, file_, pos)) {
         std::stringstream ss;
         ss << "File seek to position " << pos << " failed.";
-        throw ParquetException(ss.str());
+        //throw ParquetException(ss.str());
     }
 }
 
@@ -40,7 +39,8 @@ void HDFSFileSource::CloseFile() {
 
 int64_t HDFSFileSource::Tell() const {
     int64_t position = hdfsTell(fs_, file_);
-    if (position < 0) { throw ParquetException("ftell failed, did the file disappear?"); }
+    if (position < 0) { //throw ParquetException("ftell failed, did the file disappear?");
+    }
     return position;
 }
 

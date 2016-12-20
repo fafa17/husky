@@ -51,7 +51,7 @@ class HDFSManager {
 namespace HDFS {
 
 // singleton HDFS Manager
-static std::shared_ptr<HDFSManager> manager = NULL;
+static std::shared_ptr<HDFSManager> manager = nullptr;
 
 static void initHDFSManager(std::string& host, std::string& port) {
     manager = std::shared_ptr<HDFSManager>(new HDFSManager(host, port));

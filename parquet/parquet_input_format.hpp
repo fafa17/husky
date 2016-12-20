@@ -10,6 +10,8 @@
 
 
 #include <parquet/model/Field.hpp>
+#include <parquet/model/Row.hpp>
+#include <parquet/types.h>
 #include "io/input/file_inputformat_impl.hpp"
 
 #include "parquet/file/metadata.h"
@@ -28,7 +30,9 @@
  * Executor read the
  */
 namespace husky {
-
+    namespace pt{
+        int GetTypeByteSize(parquet::Type::type parquet_type);
+    }
     namespace io {
 
 //        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
@@ -43,27 +47,20 @@ namespace husky {
 //            hdfsFS& hdfs;
 //        };
 
-        class Row{
-        public:
-            Row();
-            void set(std::shared_ptr<Field[]> fields){
-                this->fields = fields;
-            }
-        private:
-            std::shared_ptr<Field[]> fields;
-        };
 
 
         // Create attr list with row group
         class ParquetInputFormat : public InputFormatBase {
         public:
-            ParquetInputFormat();
-            ~ParquetInputFormat();
+            ParquetInputFormat(){}
+            ~ParquetInputFormat(){}
 
             typedef std::shared_ptr<Row> RecordT;
             bool next(RecordT&);
 
             void set(std::string, int64_t , int64_t);
+            //TBD
+            void setLocal(std::string, int64_t , int64_t);
 
             bool is_setup() const {
                 return isSetup;
@@ -82,7 +79,7 @@ namespace husky {
             int64_t current_len;
 
             void convertToRow();
-            std::shared_ptr<Row[]> row_buffer;
+            Row* row_buffer;
 
             std::unique_ptr<parquet::ParquetFileReader> current_file_reader;
             std::shared_ptr<parquet::RowGroupReader> current_row_group_reader;

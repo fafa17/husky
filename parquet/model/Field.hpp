@@ -11,23 +11,23 @@
 
 class Field{
 public :
-    Field();
+    Field(){}
     ~Field(){
         delete value;
     }
 
-    std::shared_ptr<bool> getBoolean();
-    std::shared_ptr<uint8_t> getUint8();
-    std::shared_ptr<int8_t> getInt8();
-    std::shared_ptr<uint16_t> getUint16();
-    std::shared_ptr<int16_t> getInt16();
-    std::shared_ptr<uint32_t> getUint32();
-    std::shared_ptr<int32_t> getInt32();
-    std::shared_ptr<uint64_t> getUint64();
-    std::shared_ptr<int64_t> getInt64();
-    std::shared_ptr<float_t> getFloat();
-    std::shared_ptr<double_t> getDouble();
-    std::shared_ptr<std::string> getString();
+    bool* getBoolean(){return (bool*)value;}
+    uint8_t* getUint8(){return (uint8_t *)value;}
+    int8_t* getInt8(){return (int8_t *)value;}
+    uint16_t* getUint16(){return (uint16_t *)value;}
+    int16_t* getInt16(){return (int16_t *)value;}
+    uint32_t* getUint32(){return (uint32_t *)value;}
+    int32_t* getInt32(){return (int32_t *)value;}
+    uint64_t* getUint64(){return (uint64_t *)value;}
+    int64_t* getInt64(){return (int64_t *)value;}
+    float_t * getFloat(){return (float_t *)value;}
+    double_t* getDouble(){return (double_t *)value;}
+    std::string* getString(){return (std::string*)value;}
 
     void set(void* value){
         this->value = value;
