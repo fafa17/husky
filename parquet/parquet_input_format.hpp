@@ -69,8 +69,8 @@ namespace husky {
                 return isSetup;
             }
 
-            int32_t getNumOfColumn(){schema->num_columns();}
-            int64_t getNumOfRow(){current_row_group_reader->metadata()->num_rows();}
+            int32_t getNumOfColumn(){ return schema->num_columns();}
+            int64_t getNumOfRow(){ return current_row_group_reader->metadata()->num_rows();}
 
         protected:
             const parquet::SchemaDescriptor* schema;

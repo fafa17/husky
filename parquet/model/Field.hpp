@@ -12,6 +12,9 @@
 class Field{
 public :
     Field();
+    ~Field(){
+        delete value;
+    }
 
     std::shared_ptr<bool> getBoolean();
     std::shared_ptr<uint8_t> getUint8();
@@ -27,11 +30,11 @@ public :
     std::shared_ptr<std::string> getString();
 
     void set(void* value){
-        this->value.reset(value);
+        this->value = value;
     }
 
 private :
-    std::shared_ptr<void> value;
+    void* value;
 };
 
 #endif //PROJECT_FIELD_HPP

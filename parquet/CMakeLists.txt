@@ -7,11 +7,10 @@ if(LIBHDFS3_FOUND)
     add_definitions(-DWITH_HDFS)
 endif(LIBHDFS3_FOUND)
 
-add_library(parquet-objs OBJECT
-        parquet_file_assigner.cpp
+add_library(parquet-objs SHARED
         parquet_input_format.cpp)
 
-set(husky husky-lib husky-io husky-core husky-base)
+set(husky husky-lib husky-io husky-core husky-base parquet-objs)
 
 # Test
 add_executable(TestParquet test.cpp)

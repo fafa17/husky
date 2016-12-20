@@ -92,7 +92,7 @@ void husky::io::ParquetInputFormat::set(std::string filePath, int64_t startPos, 
     //Set schema
     auto source = new HDFSFileSource();
     source->Open(HDFS::getManager()->get_fs(), filePath);
-    current_file_reader = std::unique_ptr(parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source)));
+    current_file_reader = parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source));
 
     current_row_group_reader = current_file_reader->RowGroup(1);
 
@@ -100,7 +100,7 @@ void husky::io::ParquetInputFormat::set(std::string filePath, int64_t startPos, 
 
     convertToRow();
 
-    isSetup = true
+    isSetup = true;
 
 }
 
@@ -123,7 +123,7 @@ void husky::io::ParquetInputFormat::convertToRow() {
     auto total_column = getNumOfColumn();
 
     //clean up
-    row_buffer.reset(new Row[total_row]);
+    row_buffer.reset(new Row[total_row]());
 
     int64_t values_read = 0;
     uint8_t** values = new uint8_t*[total_column];
@@ -134,7 +134,7 @@ void husky::io::ParquetInputFormat::convertToRow() {
     }
 
     for ( int x = 0; x < total_row; x++){
-        std::shared_ptr<Field[]> fields(new Field[total_column]);
+        std::shared_ptr<Field[]> fields(new Field[total_column]());
 
         for ( int y = 0; y< total_column; y++){
             (*fields)[y].set((void *)values[y][x]);
