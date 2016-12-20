@@ -65,11 +65,17 @@ namespace husky {
 
             void set(std::string, int64_t , int64_t);
 
+            bool is_setup() const {
+                return isSetup;
+            }
+
             int32_t getNumOfColumn(){schema->num_columns();}
             int64_t getNumOfRow(){current_row_group_reader->metadata()->num_rows();}
 
         protected:
             const parquet::SchemaDescriptor* schema;
+
+            bool isSetup = false;
 
             std::string current_file;
             int64_t current_start_pos;

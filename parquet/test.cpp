@@ -3,3 +3,8 @@
 //
 
 #include "test.hpp"
+#include "parquet_input_format.hpp"
+
+int main(){
+    husky::io::ParquetInputFormat format;
+}

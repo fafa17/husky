@@ -9,9 +9,6 @@
 #include <fstream>
 #include <iostream>
 
-int main(){
-    std::cout << "Hello World";
-}
 
 
 #endif //PROJECT_TEST_HPP

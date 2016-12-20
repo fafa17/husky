@@ -100,6 +100,8 @@ void husky::io::ParquetInputFormat::set(std::string filePath, int64_t startPos, 
 
     convertToRow();
 
+    isSetup = true
+
 }
 
 bool husky::io::ParquetInputFormat::next(husky::io::ParquetInputFormat::RecordT &) {
