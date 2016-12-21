@@ -50,17 +50,6 @@ class HDFSManager {
 
 namespace HDFS {
 
-// singleton HDFS Manager
-static std::shared_ptr<HDFSManager> manager = nullptr;
-
-static void initHDFSManager(std::string& host, std::string& port) {
-    manager = std::shared_ptr<HDFSManager>(new HDFSManager(host, port));
-}
-
-static std::shared_ptr<HDFSManager> getManager(){
-    return HDFS::manager;
-}
-
 typedef boost::ptr_map<std::string, HDFSManager> ManagerMap;
 extern thread_local ManagerMap sManagers;
 
@@ -69,6 +58,16 @@ void Write(const std::string& host, const std::string& port, const std::string& 
 void Write(const std::string& host, const std::string& port, const char* content, const size_t& len,
            const std::string& dest_url, const int& worker_id);
 void CloseFile(const std::string& host, const std::string& port);
+
+hdfsFS* getHdfsFS(const std::string* host, const std::string* port){
+    std::string hdfs = *host + *port;
+    auto destManager = sManagers.find(hdfs);
+    if(destManager == sManagers.end()){
+        destManager = new io::HDFSManager(host, port);
+        sManagers.insert(hdfs, destManager);
+    }
+    return destManager;
+}
 
 }  // namespace HDFS
 

@@ -26,20 +26,7 @@ const int _parquet_footer_size_len = 4;
  * @param url
  * @param fileFilter
  */
-void recursiveHdfsDirectoryList(std::vector<hdfsFileInfo>* fileList, hdfsFS fs, const std::string& url, const std::regex& fileFilter) {
 
-    int num_files = 0;
-    auto* file_info_list = hdfsListDirectory(fs, url.c_str(), &num_files);
-
-    for (int x = 0; x < num_files; x++) {
-        if(file_info_list[x].mKind == kObjectKindDirectory){
-            recursiveHdfsDirectoryList(fileList, fs, url + std::string("/") + file_info_list[x].mName, fileFilter);
-        } else {
-            if(std::regex_match(file_info_list[x].mName, fileFilter))
-                fileList->push_back(file_info_list[x]);
-        }
-    }
-}
 
 ///**
 // * To get the size of the footer of a Parquet file
