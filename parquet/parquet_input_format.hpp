@@ -66,8 +66,10 @@ namespace husky {
                 return isSetup;
             }
 
-            int32_t getNumOfColumn(){ return schema->num_columns();}
-            int64_t getNumOfRow(){ return current_row_group_reader->metadata()->num_rows();}
+            int32_t getNumOfColumn(){ return schema->num_columns(); }
+            int64_t getNumOfRow(){ return current_row_group_reader->metadata()->num_rows(); }
+            const parquet::SchemaDescriptor* getSchema() {return current_file_reader->metadata()->schema(); }
+            bool nextRowGroup(){}
 
         protected:
             const parquet::SchemaDescriptor* schema;
@@ -77,9 +79,11 @@ namespace husky {
             std::string current_file;
             int64_t current_start_pos;
             int64_t current_len;
+            int64_t current_row_counter;
+
+            Row* row_buffer;
 
             void convertToRow();
-            Row* row_buffer;
 
             std::unique_ptr<parquet::ParquetFileReader> current_file_reader;
             std::shared_ptr<parquet::RowGroupReader> current_row_group_reader;

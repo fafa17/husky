@@ -7,5 +7,5 @@
 
 int main(){
     husky::io::ParquetInputFormat format;
-    format.setLocal("/Users/chrisliu/git/husky/resources/1col.parquet", 0, 100);
+    format.setLocal("../resources/1col.parquet", 0, 100);
 }

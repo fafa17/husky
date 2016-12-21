@@ -10,6 +10,11 @@
 #include "master/master.hpp"
 #include "parquet/util"
 
+struct ParquetSplit{
+    std::string path;
+    int32_t rowgroup_id;
+};
+
 class ParquetSplitAssinger {
 
 public:
@@ -19,7 +24,7 @@ public:
 
     void master_main_handler();
     void master_setup_handler();
-    void set_path(const std::string& url);
+    void browse(const std::string& url);
     std::pair<std::string, size_t> answer(std::string& host, std::string& url);
 
 
@@ -27,6 +32,6 @@ private:
 
     int num_workers_alive;
     int num_split_per_job;
-    std::map<int, std::vector<ParquetSplitInfo>> request_info_mapping;
 
+    std::vector<ParquetSplit>* split_buffer;
 };

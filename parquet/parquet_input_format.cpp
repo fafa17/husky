@@ -128,17 +128,9 @@ void husky::io::ParquetInputFormat::setLocal(std::string filePath, int64_t start
 }
 
 bool husky::io::ParquetInputFormat::next(husky::io::ParquetInputFormat::RecordT &) {
-    // Scan all row in the row group
-//
-//
-//    //load a row group into the ram
-//
-//
-//    for (int64_t x = 0 ; x < total_row ; x++ ){
-//        for (int32_t y = 0; y < total_row ; y++){
-//
-//        }
-//    }
+    // check the row count
+    // check if there are next row group from assigner
+    //
 }
 
 int husky::pt::GetTypeByteSize(parquet::Type::type parquet_type) {
@@ -162,7 +154,6 @@ int husky::pt::GetTypeByteSize(parquet::Type::type parquet_type) {
         default:
             return 0;
     }
-    return 0;
 }
 
 void husky::io::ParquetInputFormat::convertToRow() {
@@ -182,13 +173,13 @@ void husky::io::ParquetInputFormat::convertToRow() {
         parquet::ScanAllValues(total_row, nullptr, nullptr, values[x], &values_read, current_row_group_reader->Column(x).get());
     }
 
+    // from the buffer, construct the Row object
     for ( int x = 0; x < total_row; x++){
         Field* fields = new Field[total_column]();
-
         for ( int y = 0; y< total_column; y++){
-            (fields + y)->set((void * )values[y][x]);
+            size_t value_byte_size = pt::GetTypeByteSize(current_row_group_reader->Column(y)->descr()->physical_type());
+            (fields + y)->set((void *)(&values[y][x * value_byte_size]));
         }
-
         (row_buffer + x)->set(fields);
     }
 }

@@ -5,9 +5,12 @@
 #include <map>
 #include "parquet_file_assigner.hpp"
 
-ParquetSplitAssinger::ParquetSplitAssinger(const std::map<int, std::vector<ParquetSplitInfo>> &request_info_mapping)
-        : request_info_mapping(request_info_mapping) {}
+void ParquetSplitAssinger::browse(const std::string &url) {
+    //Recursive find all parquet file
 
-void ParquetSplitAssinger::set_path(const std::string &url) {
+    //build all ParquetFileReader
 
+    //read all SchemaDescriptor
+
+    //build ParquetSplit , build vector
 }
