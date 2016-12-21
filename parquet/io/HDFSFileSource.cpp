@@ -3,25 +3,26 @@
 //
 
 #include <sstream>
+#include <hdfs/hdfs.h>
+#include <parquet/exception.h>
 #include "HDFSFileSource.hpp"
 
 void HDFSFileSource::Open(hdfsFS& fs, const std::string& path) {
     path_ = path;
     fs_ = fs;
     file_ = hdfsOpenFile(fs, path.c_str(), O_RDONLY,0 ,0 ,0);
+    hdfsFileInfo* fileInfo = hdfsGetPathInfo(fs, path.c_str());
 
     is_open_ = true;
-    Seek(0);
-    size_ = HDFSFileSource::Tell();
+    size_ = fileInfo->mSize;
     Seek(0);
 }
 
 void HDFSFileSource::Seek(int64_t pos) {
-
     if (0 != hdfsSeek(fs_, file_, pos)) {
         std::stringstream ss;
         ss << "File seek to position " << pos << " failed.";
-        //throw ParquetException(ss.str());
+        throw ParquetException(ss.str());
     }
 }
 
@@ -45,7 +46,8 @@ int64_t HDFSFileSource::Tell() const {
 }
 
 int64_t HDFSFileSource::Read(int64_t nbytes, uint8_t* buffer) {
-    return hdfsRead(fs_, file_, buffer, nbytes);
+    int readSize =  hdfsRead(fs_, file_, buffer, nbytes);
+    return readSize;
 }
 
 std::shared_ptr<Buffer> HDFSFileSource::Read(int64_t nbytes) {

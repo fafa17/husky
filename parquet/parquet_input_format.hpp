@@ -58,7 +58,7 @@ namespace husky {
             typedef std::shared_ptr<Row> RecordT;
             bool next(RecordT&);
 
-            void set(std::string, int64_t , int64_t);
+            void set(hdfsFS, std::string, int64_t , int64_t);
             //TBD
             void setLocal(std::string, int64_t , int64_t);
 
@@ -69,7 +69,7 @@ namespace husky {
             int32_t getNumOfColumn(){ return schema->num_columns(); }
             int64_t getNumOfRow(){ return current_row_group_reader->metadata()->num_rows(); }
             const parquet::SchemaDescriptor* getSchema() {return current_file_reader->metadata()->schema(); }
-            bool nextRowGroup(){}
+            bool nextRowGroup();
 
         protected:
             const parquet::SchemaDescriptor* schema;
@@ -85,8 +85,8 @@ namespace husky {
 
             void convertToRow();
 
-            std::unique_ptr<parquet::ParquetFileReader> current_file_reader;
-            std::shared_ptr<parquet::RowGroupReader> current_row_group_reader;
+            std::unique_ptr<::parquet::ParquetFileReader> current_file_reader;
+            std::shared_ptr<::parquet::RowGroupReader> current_row_group_reader;
 
         };
 

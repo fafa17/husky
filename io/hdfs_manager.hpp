@@ -20,6 +20,7 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <base/exception.hpp>
 
 #include "boost/ptr_container/ptr_map.hpp"
 
@@ -42,10 +43,22 @@ class HDFSManager {
 
     inline hdfsFS& get_fs() { return fs_; }
 
+    static std::shared_ptr<HDFSManager> getInstance(){
+        if(instance == nullptr){
+            throw husky::base::HuskyException("HDFS is not init");
+        }
+        return instance;
+    }
+    static void init(const std::string& host, const std::string& port) {
+        instance.reset(new HDFSManager(host, port));
+    }
+
    protected:
     bool rm_original_;
     hdfsFS fs_ = NULL;
     std::unordered_map<std::string, hdfsFile> opened_files[1000];
+    static std::shared_ptr<HDFSManager> instance;
+
 };
 
 namespace HDFS {
@@ -58,17 +71,6 @@ void Write(const std::string& host, const std::string& port, const std::string& 
 void Write(const std::string& host, const std::string& port, const char* content, const size_t& len,
            const std::string& dest_url, const int& worker_id);
 void CloseFile(const std::string& host, const std::string& port);
-
-hdfsFS* getHdfsFS(const std::string* host, const std::string* port){
-    std::string hdfs = *host + *port;
-    auto destManager = sManagers.find(hdfs);
-    if(destManager == sManagers.end()){
-        destManager = new io::HDFSManager(host, port);
-        sManagers.insert(hdfs, destManager);
-    }
-    return destManager;
-}
-
 }  // namespace HDFS
 
 }  // namespace io

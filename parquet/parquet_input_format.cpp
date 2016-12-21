@@ -3,6 +3,7 @@
 //
 
 #include "parquet_input_format.hpp"
+#include "parquet_util.hpp"
 
 #include <hdfs/hdfs.h>
 #include <parquet/file/metadata.h>
@@ -15,9 +16,6 @@
 
 #include <io/hdfs_manager.hpp>
 #include <parquet/model/Row.hpp>
-
-const int _parquet_magic_len = 4;
-const int _parquet_footer_size_len = 4;
 
 /**
  * To recursive find all files in a directory
@@ -73,18 +71,16 @@ const int _parquet_footer_size_len = 4;
 ////    return false;
 ////}
 
-void husky::io::ParquetInputFormat::set(std::string filePath, int64_t startPos, int64_t len) {
+void husky::io::ParquetInputFormat::set(hdfsFS fs, std::string filePath, int64_t startPos, int64_t len) {
     current_file = filePath;
     current_start_pos = startPos;
     current_len = len;
 
     //Realod parquet reader and rowGroupReader
     //Set schema
-    auto source = new HDFSFileSource();
-    source->Open(HDFS::getManager()->get_fs(), filePath);
-    current_file_reader = parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source));
+    current_file_reader = husky::parquet::getHDFSParquetFileReader(&fs, &filePath);
 
-    current_row_group_reader = current_file_reader->RowGroup(1);
+    current_row_group_reader = current_file_reader->RowGroup(0);
 
     schema = current_file_reader->metadata()->schema();
 
@@ -103,7 +99,7 @@ void husky::io::ParquetInputFormat::setLocal(std::string filePath, int64_t start
     //Set schema
     auto source = new LocalFileSource();
     source->Open(filePath);
-    current_file_reader = parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source));
+    current_file_reader = ::parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source));
 
     current_row_group_reader = current_file_reader->RowGroup(0);
 
@@ -120,7 +116,7 @@ bool husky::io::ParquetInputFormat::next(husky::io::ParquetInputFormat::RecordT 
     //
 }
 
-int husky::pt::GetTypeByteSize(parquet::Type::type parquet_type) {
+int husky::pt::GetTypeByteSize(::parquet::Type::type parquet_type) {
     switch (parquet_type) {
         case Type::BOOLEAN:
             return type_traits<BooleanType::type_num>::value_byte_size;
@@ -157,7 +153,7 @@ void husky::io::ParquetInputFormat::convertToRow() {
     for ( int x = 0; x < total_column; x++){
         size_t value_byte_size = pt::GetTypeByteSize(current_row_group_reader->Column(x)->descr()->physical_type());
         values[x] = new uint8_t[total_row * value_byte_size];
-        parquet::ScanAllValues(total_row, nullptr, nullptr, values[x], &values_read, current_row_group_reader->Column(x).get());
+        ::parquet::ScanAllValues(total_row, nullptr, nullptr, values[x], &values_read, current_row_group_reader->Column(x).get());
     }
 
     // from the buffer, construct the Row object
@@ -169,4 +165,12 @@ void husky::io::ParquetInputFormat::convertToRow() {
         }
         (row_buffer + x)->set(fields);
     }
+}
+
+bool husky::io::ParquetInputFormat::nextRowGroup() {
+
+    //RPC to master for asking ParquetSplit
+    //Request: file_url
+    //Respond: ParquetSplite if rowgroupud = -1 <-- all splits are processed
+    return false;
 }

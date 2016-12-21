@@ -23,6 +23,8 @@
 namespace husky {
 namespace io {
 
+    std::shared_ptr<HDFSManager> HDFSManager::instance;
+
 namespace HDFS {
 
 thread_local ManagerMap sManagers;

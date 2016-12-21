@@ -6,13 +6,31 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <sstream>
+#include <hdfs/hdfs.h>
 
 #include "master/master.hpp"
-#include "parquet/util"
+#include "parquet/parquet_util.hpp"
 
+namespace husky{
 struct ParquetSplit{
-    std::string path;
     int32_t rowgroup_id;
+    std::string path;
+
+    std::string toString(){
+        std::stringstream stream;
+        stream << rowgroup_id;
+        stream << path;
+        return stream.str();
+    }
+
+    std::string fromString(std::string in_str){
+        std::stringstream stream;
+        stream.str(in_str);
+        stream >> rowgroup_id;
+        stream >> path;
+        return stream.str();
+    }
 };
 
 class ParquetSplitAssinger {
@@ -22,10 +40,11 @@ public:
 
     ~ParquetSplitAssinger() = default;
 
-    void master_main_handler();
-    void master_setup_handler();
-    void browse(const std::string& url);
-    std::pair<std::string, size_t> answer(std::string& host, std::string& url);
+    void response();
+    void setup();
+    void init_hdfs(const std::string* host, const std::string* port);
+    int browse(const std::string &url);
+    ParquetSplit *answer(std::string &fileUrl);
 
 
 private:
@@ -33,5 +52,10 @@ private:
     int num_workers_alive;
     int num_split_per_job;
 
-    std::vector<ParquetSplit>* split_buffer;
+    //map url -> list of splits
+    std::map<std::string, std::vector<ParquetSplit>> split_buffer_map;
+    hdfsFS* current_fs;
 };
+
+void recursiveHdfsDirectoryList(std::vector<hdfsFileInfo>* fileList, hdfsFS fs, const std::string& url, const std::regex& fileFilter);
+}

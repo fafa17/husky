@@ -11,8 +11,8 @@
 class Row{
 public:
     Row(){}
-    void set(Field* field){
-        this->fields = fields;
+    void set(Field* infields){
+        fields = infields;
     }
 private:
     Field* fields;
