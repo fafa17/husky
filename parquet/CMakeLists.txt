@@ -1,6 +1,6 @@
 include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 
-set(plugin parquet_file_assigner.cpp parquet_input_format.cpp model/Field.cpp io/HDFSFileSource.cpp test.cpp model/Row.cpp model/Row.hpp parquet_util.cpp parquet_util.hpp)
+set(plugin parquet_file_assigner.cpp parquet_input_format.cpp model/Field.cpp io/HDFSFileSource.cpp test.cpp model/Row.cpp model/Row.hpp parquet_util.cpp parquet_util.hpp io/ParquetSplit.cpp io/ParquetSplit.hpp)
 
 
 if(LIBHDFS3_FOUND)

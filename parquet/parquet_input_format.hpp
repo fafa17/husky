@@ -8,16 +8,14 @@
 #ifndef PROJECT_PARQUET_READER_HPP
 #define PROJECT_PARQUET_READER_HPP
 
-
-#include <parquet/model/Field.hpp>
-#include <parquet/model/Row.hpp>
 #include <parquet/types.h>
-#include "io/input/file_inputformat_impl.hpp"
+#include <parquet/file/metadata.h>
+#include <parquet/schema/descriptor.h>
+#include <parquet/file/reader.h>
 
-#include "parquet/file/metadata.h"
-#include "parquet/schema/descriptor.h"
-#include "parquet/file/reader.h"
+#include "io/input/file_inputformat_impl.hpp"
 #include "parquet/model/Field.hpp"
+#include "parquet/model/Row.hpp"
 /**
  * Loader
  * ------------
@@ -58,8 +56,8 @@ namespace husky {
             typedef std::shared_ptr<Row> RecordT;
             bool next(RecordT&);
 
-            void set(hdfsFS, std::string, int64_t , int64_t);
-            //TBD
+            void set(hdfsFS, std::string, int32_t);
+            //TODO: BD
             void setLocal(std::string, int64_t , int64_t);
 
             bool is_setup() const {
@@ -76,12 +74,12 @@ namespace husky {
 
             bool isSetup = false;
 
-            std::string current_file;
-            int64_t current_start_pos;
-            int64_t current_len;
-            int64_t current_row_counter;
+            //no more splits to be processed
+            bool finish = false;
 
-            Row* row_buffer;
+            std::string current_file;
+
+            std<vector>* row_buffer = nullptr;
 
             void convertToRow();
 

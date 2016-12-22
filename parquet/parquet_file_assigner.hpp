@@ -11,27 +11,9 @@
 
 #include "master/master.hpp"
 #include "parquet/parquet_util.hpp"
+#include "parquet/io/ParquetSplit.hpp"
 
 namespace husky{
-struct ParquetSplit{
-    int32_t rowgroup_id;
-    std::string path;
-
-    std::string toString(){
-        std::stringstream stream;
-        stream << rowgroup_id;
-        stream << path;
-        return stream.str();
-    }
-
-    std::string fromString(std::string in_str){
-        std::stringstream stream;
-        stream.str(in_str);
-        stream >> rowgroup_id;
-        stream >> path;
-        return stream.str();
-    }
-};
 
 class ParquetSplitAssinger {
 

@@ -40,7 +40,7 @@ void testHDFSRead(){
     husky::io::ParquetInputFormat format;
     husky::io::HDFSManager::init(host, port);
     auto fs = husky::io::HDFSManager::getInstance()->get_fs();
-    format.set(fs, hdfsParquet, 0, 100);
+    format.set(fs, hdfsParquet, 0);
     std::cout << format.getSchema()->name();
 };
 

@@ -4,6 +4,7 @@
 
 #include "parquet_input_format.hpp"
 #include "parquet_util.hpp"
+#include "io/ParquetSplit.hpp"
 
 #include <hdfs/hdfs.h>
 #include <parquet/file/metadata.h>
@@ -16,6 +17,7 @@
 
 #include <io/hdfs_manager.hpp>
 #include <parquet/model/Row.hpp>
+#include <hdfs_lib/include/hdfs/hdfs.h>
 
 /**
  * To recursive find all files in a directory
@@ -71,16 +73,14 @@
 ////    return false;
 ////}
 
-void husky::io::ParquetInputFormat::set(hdfsFS fs, std::string filePath, int64_t startPos, int64_t len) {
+void husky::io::ParquetInputFormat::set(hdfsFS fs, std::string filePath, int32_t rowgroupid) {
     current_file = filePath;
-    current_start_pos = startPos;
-    current_len = len;
 
     //Realod parquet reader and rowGroupReader
     //Set schema
     current_file_reader = husky::parquet::getHDFSParquetFileReader(&fs, &filePath);
 
-    current_row_group_reader = current_file_reader->RowGroup(0);
+    current_row_group_reader = current_file_reader->RowGroup(rowgroupid);
 
     schema = current_file_reader->metadata()->schema();
 
@@ -113,7 +113,7 @@ void husky::io::ParquetInputFormat::setLocal(std::string filePath, int64_t start
 bool husky::io::ParquetInputFormat::next(husky::io::ParquetInputFormat::RecordT &) {
     // check the row count
     // check if there are next row group from assigner
-    //
+    if
 }
 
 int husky::pt::GetTypeByteSize(::parquet::Type::type parquet_type) {
@@ -144,7 +144,7 @@ void husky::io::ParquetInputFormat::convertToRow() {
     auto total_column = getNumOfColumn();
 
     //clean up
-    row_buffer = new Row[total_row]();
+    row_buffer = new std<vector>(total_row);
 
     int64_t values_read = 0;
     uint8_t** values = new uint8_t*[total_column];
@@ -163,7 +163,7 @@ void husky::io::ParquetInputFormat::convertToRow() {
             size_t value_byte_size = pt::GetTypeByteSize(current_row_group_reader->Column(y)->descr()->physical_type());
             (fields + y)->set((void *)(&values[y][x * value_byte_size]));
         }
-        (row_buffer + x)->set(fields);
+        (row_buffer->data() + x)->set(fields);
     }
 }
 
@@ -172,5 +172,21 @@ bool husky::io::ParquetInputFormat::nextRowGroup() {
     //RPC to master for asking ParquetSplit
     //Request: file_url
     //Respond: ParquetSplite if rowgroupud = -1 <-- all splits are processed
-    return false;
+    BinStream question;
+    question << current_file << husky::Context::get_param("hostname");
+    BinStream answer = husky::Context::get_coordinator().ask_master(question, husky::TYPE_PARQUET_BLK_REQ);
+    std::string fn;
+    answer >> fn;
+    ParquetSplit* split = new ParquetSplit();
+    split.fromString(fn);
+
+    //check if the split is valid
+    if(split.rowgroup_id == -1){
+        //no tasks
+        return false
+    }
+
+    set(husky::io::HDFSManager->getInstance()->getFS, split->path, split->rowgroup_id);
+
+    return true;
 }
