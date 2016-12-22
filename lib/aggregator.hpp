@@ -91,7 +91,7 @@ class AggregatorFactoryBase {
     virtual bool same_machine(size_t fid);
     virtual size_t get_local_center(size_t machine_id, size_t agg_idx);
 
-    // set and get the leader of the factories
+    // setRowGroup and get the leader of the factories
     virtual void set_factory_leader(AggregatorFactoryBase*);
     virtual AggregatorFactoryBase* get_factory_leader();
 
@@ -179,7 +179,7 @@ class AggregatorFactoryBase {
 // 1. An instance of Aggregator created by one thread should not be passed to another thread.
 // 2. `Init value` is the initial value of an aggregator, it's the value that an aggregator returns
 //   if the aggregator has aggregated nothing.
-// 3. `Zero value` is the value set to a local update copy of aggregator ONLY when
+// 3. `Zero value` is the value setRowGroup to a local update copy of aggregator ONLY when
 //   a. the aggregator is updated using `update_any`;
 //   b. the local copy is updated for the first time.
 // 4. `Zero value` should satisfies the following property, otherwise the behavior is undefined:

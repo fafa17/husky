@@ -28,7 +28,7 @@ find_package(Threads)
 find_package(Boost 1.58.0 COMPONENTS system filesystem regex thread program_options)
 
 # External Libraries
-set(EXTERNAL_LIB ${ZMQ_LIBRARY} ${TCMALLOC_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+set(EXTERNAL_LIB ${ZMQ_LIBRARY} ${TCMALLOC_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${PROJECT_SOURCE_DIR}/parquet_lib/libparquet.dylib)
 
 # libhdfs3
 if(LIBHDFS3_FOUND)
@@ -56,5 +56,5 @@ add_subdirectory(benchmarks)
 add_subdirectory(parquet)
 
 # libhusky.a
-set(husky-objs $<TARGET_OBJECTS:channel-objs> $<TARGET_OBJECTS:base-objs> $<TARGET_OBJECTS:core-objs> ${io-objs} ${lib-objs})
+set(husky-objs $<TARGET_OBJECTS:channel-objs> $<TARGET_OBJECTS:base-objs> $<TARGET_OBJECTS:core-objs> ${io-objs} ${lib-objs} $<TARGET_OBJECTS:parquet-obj>)
 add_library(husky STATIC ${husky-objs})

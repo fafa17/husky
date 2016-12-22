@@ -25,7 +25,7 @@ if(MONGOCLIENT_FOUND)
     add_definitions(-DWITH_MONGODB)
 endif(MONGOCLIENT_FOUND)
 
-set(husky husky-lib husky-io husky-core husky-base) 
+set(husky husky-lib husky-io husky-core husky-base husky-parquet)
 
 ### Applications
 
@@ -66,7 +66,7 @@ target_link_libraries(PageRank ${EXTERNAL_LIB})
 set_property(TARGET PageRank PROPERTY CXX_STANDARD 14)
 
 # Aggregator
-add_executable(Aggregator aggregator.cpp)
+add_executable(Aggregator aggregator.cpp parquet.cpp)
 target_link_libraries(Aggregator ${husky})
 target_link_libraries(Aggregator ${EXTERNAL_LIB})
 set_property(TARGET Aggregator PROPERTY CXX_STANDARD 14)
@@ -100,3 +100,9 @@ add_executable(SVM svm.cpp)
 target_link_libraries(SVM ${husky})
 target_link_libraries(SVM ${EXTERNAL_LIB})
 set_property(TARGET SVM PROPERTY CXX_STANDARD 14)
+
+# parquet
+add_executable(ParquetRead parquet.cpp)
+target_link_libraries(ParquetRead ${husky})
+target_link_libraries(ParquetRead ${EXTERNAL_LIB})
+set_property(TARGET ParquetRead PROPERTY CXX_STANDARD 14)

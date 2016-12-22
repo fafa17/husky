@@ -50,14 +50,18 @@ namespace husky {
         // Create attr list with row group
         class ParquetInputFormat : public InputFormatBase {
         public:
-            ParquetInputFormat(){}
-            ~ParquetInputFormat(){}
+            ParquetInputFormat() = default;
+            ~ParquetInputFormat() = default;
 
-            typedef std::shared_ptr<Row> RecordT;
+            typedef Row RecordT;
             bool next(RecordT&);
 
-            void set(hdfsFS, std::string, int32_t);
-            //TODO: BD
+            void set_input(std::string &path){
+                current_file = path;
+                isSetup = true;
+            }
+
+            //TODO: TBD
             void setLocal(std::string, int64_t , int64_t);
 
             bool is_setup() const {
@@ -69,7 +73,10 @@ namespace husky {
             const parquet::SchemaDescriptor* getSchema() {return current_file_reader->metadata()->schema(); }
             bool nextRowGroup();
 
+            void setRowGroup(hdfsFS, std::string, int32_t);
+
         protected:
+
             const parquet::SchemaDescriptor* schema;
 
             bool isSetup = false;
@@ -79,7 +86,8 @@ namespace husky {
 
             std::string current_file;
 
-            std<vector>* row_buffer = nullptr;
+            std::vector<Row>* row_buffer = nullptr;
+            int row_buffer_counter = 0;
 
             void convertToRow();
 

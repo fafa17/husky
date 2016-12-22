@@ -84,7 +84,6 @@ namespace husky{
         auto& master = Master::get_instance();
         auto socket = master.get_socket();
         base::BinStream request = zmq_recv_binstream(socket.get());
-        std::string host = base::deser<std::string>(request);
         std::string fileurl = base::deser<std::string>(request);
         ParquetSplit* split = answer(fileurl);
         if(split == nullptr){
@@ -92,7 +91,8 @@ namespace husky{
             split->rowgroup_id = -1;
         }
         base::BinStream response;
-        response << split->toString();
+        std::string serialized_split = split->toString();
+        response << serialized_split;
         zmq_sendmore_string(socket.get(), master.get_cur_client());
         zmq_sendmore_dummy(socket.get());
         zmq_send_binstream(socket.get(), response);

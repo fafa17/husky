@@ -14,6 +14,9 @@ public:
     void set(Field* infields){
         fields = infields;
     }
+    Field* get(){
+        return fields;
+    }
 private:
     Field* fields;
 };

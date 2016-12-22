@@ -63,7 +63,7 @@ void linear_regression() {
     int num_features = data_loader.get_num_feature();
 
     // scale values to [-1, 1]
-    // TODO(Tatiana): inconsistent scaling for train and test set may be problematic
+    // TODO(Tatiana): inconsistent scaling for train and test setRowGroup may be problematic
     husky::lib::ml::LinearScaler<> scaler_train(num_features);
     husky::lib::ml::LinearScaler<> scaler_test(num_features);
     scaler_train.fit_transform(train_set);
@@ -77,11 +77,11 @@ void linear_regression() {
     lr.report_per_round = true;  // report training error per round
     lr.train<husky::lib::ml::SGD<SparseFeatureLabel, ParameterBucket<double>>>(train_set, num_iter, alpha);
 
-    report("The error on training set = " + std::to_string(lr.avg_error(train_set)));
-    report("The score on training set = " + std::to_string(lr.score(train_set)));
+    report("The error on training setRowGroup = " + std::to_string(lr.avg_error(train_set)));
+    report("The score on training setRowGroup = " + std::to_string(lr.score(train_set)));
     // validation
-    report("The error on testing set = " + std::to_string(lr.avg_error(test_set)));
-    report("The score on testing set = " + std::to_string(lr.score(test_set)));
+    report("The error on testing setRowGroup = " + std::to_string(lr.avg_error(test_set)));
+    report("The score on testing setRowGroup = " + std::to_string(lr.score(test_set)));
 }
 
 int main(int argc, char** argv) {

@@ -6,7 +6,7 @@ fi
 export HUSKY_BUILD=$HUSKY_ROOT/release
 
 if [ -z $LIBRARY_PATH ]; then
-    echo "Please set LIBRARY_PATH"
+    echo "Please setRowGroup LIBRARY_PATH"
     exit
 fi
 

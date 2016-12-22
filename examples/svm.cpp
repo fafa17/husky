@@ -90,7 +90,7 @@ void svm() {
     AggregatorFactory::sync();
     int num_samples = num_samples_agg.get_value();
     if (husky::Context::get_global_tid() == 0) {
-        husky::base::log_msg("Training set size = " + std::to_string(num_samples));
+        husky::base::log_msg("Training setRowGroup size = " + std::to_string(num_samples));
     }
 
     // Aggregators for regulator, w square and loss
@@ -196,7 +196,7 @@ void svm() {
     });
 
     if (husky::Context::get_global_tid() == 0) {
-        husky::base::log_msg("Error rate on testing set: "
+        husky::base::log_msg("Error rate on testing setRowGroup: "
                 + std::to_string(static_cast<double>(error_agg.get_value()) / num_test_agg.get_value()));
     }
 }

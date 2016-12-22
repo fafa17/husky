@@ -15,7 +15,7 @@
 
 include_directories(${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
 
-set(master_plugins mongodb_assigner.cpp nfs_assigner.cpp progress_tracker.cpp nfs_binary_assigner.cpp)
+set(master_plugins mongodb_assigner.cpp nfs_assigner.cpp progress_tracker.cpp nfs_binary_assigner.cpp parquet_file_assigner.cpp)
 
 if(LIBHDFS3_FOUND)
     include_directories(${LIBHDFS3_INCLUDE_DIR})
@@ -28,10 +28,10 @@ if(MONGOCLIENT_FOUND)
     add_definitions(-DWITH_MONGODB)
 endif(MONGOCLIENT_FOUND)
 
-set(husky husky-lib husky-io husky-core husky-base)
+set(husky husky-lib husky-io husky-core husky-base husky-parquet-util)
 
 # Master
-add_executable(Master master.cpp ${master_plugins})
-target_link_libraries(Master ${husky})
-target_link_libraries(Master ${EXTERNAL_LIB})
-set_property(TARGET Master PROPERTY CXX_STANDARD 14)
+add_executable(MasterRun master.cpp ${master_plugins})
+target_link_libraries(MasterRun ${husky})
+target_link_libraries(MasterRun ${EXTERNAL_LIB})
+set_property(TARGET MasterRun PROPERTY CXX_STANDARD 14)

@@ -6,14 +6,25 @@
 #define PROJECT_PARQUETSPLIT_HPP
 
 
+#include <string>
+#include <sstream>
+#include <iostream>
+
 class ParquetSplit{
+public:
+    ParquetSplit() = default;
+    ~ParquetSplit() = default;
+
     int32_t rowgroup_id;
     std::string path;
 
     std::string toString(){
+        //TODO: little hack.... stream
+        std::string tmp_path = path;
         std::stringstream stream;
+        stream.clear();
         stream << rowgroup_id;
-        stream << path;
+        stream << tmp_path;
         return stream.str();
     }
 
