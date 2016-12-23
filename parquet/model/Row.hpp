@@ -11,14 +11,14 @@
 class Row{
 public:
     Row(){}
-    void set(Field* infields){
+    void set(std::vector<Field>* infields){
         fields = infields;
     }
-    Field* get(){
+    std::vector<Field>* get(){
         return fields;
     }
 private:
-    Field* fields;
+    std::vector<Field>* fields;
 };
 
 

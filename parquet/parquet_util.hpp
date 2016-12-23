@@ -11,6 +11,7 @@
 namespace husky{
     namespace parquet{
         std::unique_ptr<::parquet::ParquetFileReader> getHDFSParquetFileReader(hdfsFS* fs, const std::string* path);
+        int getIndByColName(const ::parquet::SchemaDescriptor& descriptor, const std::string& col_name);
     }
 }
 

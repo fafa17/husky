@@ -20,60 +20,6 @@
 #include <core/context.hpp>
 #include <core/constants.hpp>
 
-/**
- * To recursive find all files in a directory
- * @param fileList
- * @param fs
- * @param url
- * @param fileFilter
- */
-
-
-///**
-// * To get the size of the footer of a Parquet file
-// * @param file
-// * @param info
-// * @param fs
-// * @return
-// */
-//int32_t getParquetFooterSize(hdfsFile file, hdfsFileInfo* info, hdfsFS fs){
-//    auto filesize = info->mSize;
-//    int64_t footer_size_start = filesize - _parquet_footer_size_len - _parquet_magic_len;
-//
-//    //Footer Size from the hdfs block
-//    int32_t* footer_size;
-//
-//    hdfsPread(fs, file, footer_size_start, footer_size, _parquet_footer_size_len);
-//}
-//
-//
-//parquet::FileMetaData* getParquetFooter(std::string& url, hdfsFS fs) {
-//    auto *file_info = hdfsGetPathInfo(fs, url.c_str());
-//    auto file_size = file_info->mSize;
-//
-//    auto hdfs_file = hdfsOpenFile(fs, url.c_str(), O_RDONLY, 0, 0, 0);
-//    auto footer_size = getParquetFooterSize(hdfs_file, file_info, fs);
-//
-////    parquet::FileMetaData::Make(&metadata_buffer[0], &footer_size);
-//}
-////
-////bool husky::io::ParquetLoader::load(const std::string& url) {
-////    //hadoop read
-////    //list all files
-////    std::regex parquetSuffixFilter("*.parquet");
-////    auto * file_list = new std::vector<hdfsFileInfo>();
-////    recursiveHdfsDirectoryList(file_list, this->hdfs, url, parquetSuffixFilter);
-////
-////    //get footers of all files
-////    //TODO: checking schema consistency over files
-////    for ( int x = 0; x < file_list->size(); x++ ){
-////
-////    }
-////    //Create new split object for each row group
-////    //set to assigner
-////    return false;
-////}
-
 void husky::io::ParquetInputFormat::setRowGroup(hdfsFS fs, std::string filePath, int32_t rowgroupid) {
 
     //Realod parquet reader and rowGroupReader
@@ -85,26 +31,6 @@ void husky::io::ParquetInputFormat::setRowGroup(hdfsFS fs, std::string filePath,
     schema = current_file_reader->metadata()->schema();
 
     convertToRow();
-
-    row_buffer_counter = 0;
-}
-
-//TBD
-void husky::io::ParquetInputFormat::setLocal(std::string filePath, int64_t startPos, int64_t len) {
-
-    //Realod parquet reader and rowGroupReader
-    //Set schema
-    auto source = new LocalFileSource();
-    source->Open(filePath);
-    current_file_reader = ::parquet::ParquetFileReader::Open(std::unique_ptr<RandomAccessSource>(source));
-
-    current_row_group_reader = current_file_reader->RowGroup(0);
-
-    schema = current_file_reader->metadata()->schema();
-
-    convertToRow();
-
-    isSetup = true;
 
     row_buffer_counter = 0;
 }
@@ -164,14 +90,15 @@ void husky::io::ParquetInputFormat::convertToRow() {
         size_t value_byte_size = pt::GetTypeByteSize(current_row_group_reader->Column(x)->descr()->physical_type());
         values[x] = new uint8_t[total_row * value_byte_size];
         ::parquet::ScanAllValues(total_row, nullptr, nullptr, values[x], &values_read, current_row_group_reader->Column(x).get());
+        values[x] = std::move(values[x]);
     }
 
     // from the buffer, construct the Row object
     for ( int x = 0; x < total_row; x++){
-        Field* fields = new Field[total_column]();
+        std::vector<Field>* fields = new std::vector<Field>(total_column);
         for ( int y = 0; y< total_column; y++){
             size_t value_byte_size = pt::GetTypeByteSize(current_row_group_reader->Column(y)->descr()->physical_type());
-            (fields + y)->set((void *)(&values[y][x * value_byte_size]));
+            fields->at(y).set((void *)(&values[y][x * value_byte_size]));
         }
         row_buffer->at(x).set(fields);
     }

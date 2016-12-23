@@ -9,6 +9,7 @@
 #include "parquet/file/metadata.h"
 #include "parquet/file/reader.h"
 
+
 class Field{
 public :
     Field(){}
@@ -27,7 +28,7 @@ public :
     int64_t getInt64(){return *(int64_t *)value;}
     float_t getFloat(){return *(float_t *)value;}
     double_t getDouble(){return *(double_t *)value;}
-    std::string getString(){return *(std::string*)value;}
+    std::wstring getString();
 
     void set(void* value){
         this->value = value;

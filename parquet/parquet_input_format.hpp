@@ -16,38 +16,15 @@
 #include "io/input/file_inputformat_impl.hpp"
 #include "parquet/model/Field.hpp"
 #include "parquet/model/Row.hpp"
-/**
- * Loader
- * ------------
- * Build object list
- * Build all attr list accroding schema
- *
- * Reader
- * ------------
- * Given a map <string, attrList>
- * Executor read the
- */
+
 namespace husky {
     namespace pt{
-        int GetTypeByteSize(parquet::Type::type parquet_type);
+
+        // Taken from Parquet function
+        int GetTypeByteSize(::parquet::Type::type parquet_type);
     }
     namespace io {
 
-//        parquet::FileMetaData read_footer(bool skipRowGroup, const std::string &url);
-//
-//        class ParquetLoader {
-//        public:
-//            ParquetLoader();
-//            ~ParquetLoader();
-//            bool load(const std::string& url);
-//
-//        protected:
-//            hdfsFS& hdfs;
-//        };
-
-
-
-        // Create attr list with row group
         class ParquetInputFormat : public InputFormatBase {
         public:
             ParquetInputFormat() = default;
@@ -61,23 +38,20 @@ namespace husky {
                 isSetup = true;
             }
 
-            //TODO: TBD
-            void setLocal(std::string, int64_t , int64_t);
-
             bool is_setup() const {
                 return isSetup;
             }
 
             int32_t getNumOfColumn(){ return schema->num_columns(); }
             int64_t getNumOfRow(){ return current_row_group_reader->metadata()->num_rows(); }
-            const parquet::SchemaDescriptor* getSchema() {return current_file_reader->metadata()->schema(); }
+            const ::parquet::SchemaDescriptor* getSchema() {return current_file_reader->metadata()->schema(); }
             bool nextRowGroup();
 
             void setRowGroup(hdfsFS, std::string, int32_t);
 
         protected:
 
-            const parquet::SchemaDescriptor* schema;
+            const ::parquet::SchemaDescriptor* schema;
 
             bool isSetup = false;
 

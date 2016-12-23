@@ -33,12 +33,6 @@ const std::string hdfsParquet("/parquet_1col/part-r-00000-6317221d-3fda-4789-96c
 //    assinger.browse(parquet_url);
 //}
 
-void testLocalRead(){
-    husky::io::ParquetInputFormat format;
-    format.setLocal("../resources/1col.parquet", 0, 100);
-    std::cout << format.getSchema()->name();
-};
-
 void testHDFSRead(){
     husky::io::ParquetInputFormat format;
     husky::io::HDFSManager::init(host, port);
@@ -56,7 +50,7 @@ void testParquetInputFormat(){
         if(!format.next(row)){
             break;
         }
-        std::cout << row.get()->getInt32() << std::endl;
+        std::cout << row.get()->at(0).getInt32() << std::endl;
     }while(true);
 }
 //int main(){

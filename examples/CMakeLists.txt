@@ -106,3 +106,9 @@ add_executable(ParquetRead parquet.cpp)
 target_link_libraries(ParquetRead ${husky})
 target_link_libraries(ParquetRead ${EXTERNAL_LIB})
 set_property(TARGET ParquetRead PROPERTY CXX_STANDARD 14)
+
+# parquet
+add_executable(ParquetAgg parquetAgg.cpp)
+target_link_libraries(ParquetAgg ${husky})
+target_link_libraries(ParquetAgg ${EXTERNAL_LIB})
+set_property(TARGET ParquetAgg PROPERTY CXX_STANDARD 14)
